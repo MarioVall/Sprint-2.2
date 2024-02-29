@@ -2,7 +2,7 @@
 var products = [
     {
         id: 1,
-        name: 'cooking oil',
+        name: 'Cooking oil',
         price: 10.5,
         type: 'grocery',
         offer: {
@@ -75,24 +75,26 @@ var cart = [];
 var total = 0;
 
 // Exercise 1
+function buy(id) {
 
-
-
-function buy(id) {  
-    
-    for (let item of products) {
+    for (const item of products) {
         if (item.id === id) {
             let i = cart.findIndex(p => p.id === id)
-            if (i >= 0) {
+            if (i != -1) {
+                
                 cart[i].quantity++;
             }
             else {
+                
                 cart.push({id: item.id, product: item, quantity: 1});
             }
             break;
         }
     }
+    cartCounter();
 }
+
+
 
 // Exercise 2
 function cleanCart() {
@@ -101,17 +103,23 @@ function cleanCart() {
         window.alert("El carrito se ha vaciado con éxito!"), cart = [];
     }else 
         window.alert("No tiene productos en el carrito.");
+    cartCounter();
 }
 
 // Exercise 3
 function calculateTotal() {
 
     let total = 0;
-    for (let item in cart) {
-        const object = cart[item];
-        const quantity = element.quantity;
-        const price = object.product.price;
-        total += quantity*price;
+    for (const item in cart) {
+        const element = cart[item];
+        if (element.subtotalWithDiscount != undefined) {
+            total += element.subtotalWithDiscount;
+        }
+        else {
+            const quantity = element.quantity;
+            const price = element.product.price;
+            total += quantity*price;
+        }
     }
     return total;
 }
@@ -120,13 +128,13 @@ function calculateTotal() {
 function applyPromotionsCart() {
 
     for (const item of cart) {
-        if (item.id === 1 && item.quantity >= item.product.offer.number || item.id === 3 && item.quantity >= item.product.offer.number) {
+        if (item.product.offer && item.quantity >= item.product.offer.number) {
             const discount = item.product.offer.percent/100;
             const price = item.product.price;
             const quantity = item.quantity;
-            let priceWithoutDiscount = price*quantity;
-            let amountToDiscount = priceWithoutDiscount*discount;
-            let finalPrice = priceWithoutDiscount - amountToDiscount;
+            let priceNoDiscount = price*quantity;
+            let amountToDiscount = priceNoDiscount*discount;
+            let finalPrice = priceNoDiscount - amountToDiscount;
             item.subtotalWithDiscount = parseFloat(finalPrice.toFixed(2));
         }
     }
@@ -145,19 +153,18 @@ function printCart() {
             <td>$${item.product.price}</td>
             <td>${item.quantity}</td>
         `;
-        if (item.subtotalWithDiscount != undefined) {
-            itemHTML += `<td>${item.subtotalWithDiscount}</td>`;
+        if (item.subtotalWithDiscount != undefined || item.subtotalWithDiscount != null) {
+            itemHTML += `<td>$${item.subtotalWithDiscount}</td>`;
         }
         else {
-            itemHTML += `<td>${item.product.price*item.quantity}</td>`;
+            itemHTML += `<td>$${item.product.price*item.quantity}</td>`;
         }
         row.innerHTML = itemHTML;
         cart_list.appendChild(row);
     }
 
-    
-    var finalPrice = document.getElementById('total_price');
-    finalPrice.innerHTML = calculateTotal();
+    var totalPrice = document.getElementById('total_price');
+    totalPrice.innerText = calculateTotal();
 }
 
 function final_cart() {
@@ -166,27 +173,16 @@ function final_cart() {
 }
 
 
-// ** Nivell II **
 
-// Exercise 7
-function removeFromCart(productId) {
-    const index = cart.findIndex(item => item.id === productId);
-
-    if (index <= 0) {
-        cart[index].quantity--;
-
-        if (cart[index].quantity === 0) {
-            cart.splice(index, 1);  
-        }
-
-        applyPromotionsCart();
+function cartCounter() {
+    let totalItems = 0;
+    for (const item of cart) {
+        totalItems += item.quantity;
     }
+
+    let countProduct = document.getElementById('count_product');
+    countProduct.innerText = totalItems;
 }
-
-
-
-
-
 
 
 
