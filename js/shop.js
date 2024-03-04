@@ -99,10 +99,8 @@ function buy(id) {
 // Exercise 2
 function cleanCart() {
     
-    if(cart.length > 0){
-        window.alert("El carrito se ha vaciado con éxito!"), cart = [];
-    }else 
-        window.alert("No tiene productos en el carrito.");
+    cart = [];
+    final_cart();
     cartCounter();
 }
 
